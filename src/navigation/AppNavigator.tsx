@@ -5,10 +5,6 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 
-import ConsultationsListScreen from '../screens/ConsultationsListScreen';
-import ScheduleConsultationScreen from '../screens/ScheduleConsultationScreen';
-import ConfirmAppointmentScreen from '../screens/ConfirmAppointmentScreen';
-
 import DashboardScreen from '../screens/DashboardScreen';
 import StationDetailScreen from '../screens/StationDetailScreen';
 import PreferencesScreen from '../screens/ChargingPreferencesScreen';
@@ -35,7 +31,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppNavigator = () => {
   return (
     
-    <Stack.Navigator initialRouteName="Welcome">
+    <Stack.Navigator initialRouteName="Welcome" >
       {/* Telas de Login */}
       <Stack.Screen 
         name="Welcome" 
@@ -51,23 +47,6 @@ const AppNavigator = () => {
         name="SignUp" 
         component={SignUpScreen} 
         options={{ title: 'Cadastrar' }} // Título personalizável
-      />
-
-      {/* Telas de Consulta */}
-      <Stack.Screen 
-        name="ConsultationsList" 
-        component={ConsultationsListScreen} 
-        options={{ title: 'Consultas Agendadas' }} // Título personalizável
-      />
-      <Stack.Screen 
-        name="ScheduleConsultation" 
-        component={ScheduleConsultationScreen} 
-        options={{ title: 'Agendar Consulta' }} // Título personalizável
-      />
-      <Stack.Screen 
-        name="ConfirmAppointment" 
-        component={ConfirmAppointmentScreen} 
-        options={{ title: 'Confirmação de Agendamento' }} // Título personalizável
       />
 
       {/*Telas de Recarga */}

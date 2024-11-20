@@ -2,7 +2,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, Button, Center, Input, Heading, VStack, FormControl, Text, Spinner } from 'native-base';
 import React, { useState } from 'react';
 import { Alert as RNAlert } from 'react-native';
-import { login } from '../api/auth';
+import { login, getUserIdByUsername } from '../api/auth';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -29,9 +29,16 @@ const LoginScreen = ({ navigation }: Props) => {
             const token = await login(username, password);
             console.log('Token:', token);
             await AsyncStorage.setItem('token', token);
+
+            console.log('username:', username);
+            const userId = await getUserIdByUsername(username);
+            console.log('User ID:', userId);
+            await AsyncStorage.setItem('username', username);
+            await AsyncStorage.setItem('userId', userId.toString());
+
             setIsLoading(false); // Esconde o spinner
             RNAlert.alert('Login realizado com sucesso!');
-            navigation.navigate('ConsultationsList');
+            navigation.navigate('Dashboard');
         } catch (err: unknown) {
             setErrorMessage('Usuário ou senha inválidos.');
             setIsLoading(false); // Esconde o spinner
