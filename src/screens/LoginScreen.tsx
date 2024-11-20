@@ -61,7 +61,7 @@ const LoginScreen = ({ navigation }: Props) => {
                     <FormControl isRequired>
                         <FormControl.Label>Usuário</FormControl.Label>
                         <Input
-                            placeholder="Digite seu usuário"
+                            placeholder="Ex: joao2024"
                             value={username}
                             onChangeText={(text) => setUsername(text)}
                             autoCapitalize="none"
@@ -71,7 +71,7 @@ const LoginScreen = ({ navigation }: Props) => {
                     <FormControl isRequired>
                         <FormControl.Label>Senha</FormControl.Label>
                         <Input
-                            placeholder="Digite sua senha"
+                            placeholder="Ex: Jo40!@#$"
                             value={password}
                             onChangeText={(text) => setPassword(text)}
                             type="password"

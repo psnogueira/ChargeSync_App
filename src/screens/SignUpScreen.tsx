@@ -77,12 +77,12 @@ const SignUpScreen = ({ navigation }: Props) => {
                 maxWidth="70%" 
                 width="100%"
             >
-                <Heading mb={6} textAlign="center">Registro</Heading>
+                <Heading mb={6} textAlign="center">Cadastro</Heading>
                 <VStack space={4}>
                     <FormControl isRequired>
                         <FormControl.Label>Usuário</FormControl.Label>
                         <Input
-                            placeholder="Digite seu usuário"
+                            placeholder="Ex: joao2024"
                             value={username}
                             onChangeText={(text) => setUsername(text)}
                             autoCapitalize="none"
@@ -115,7 +115,7 @@ const SignUpScreen = ({ navigation }: Props) => {
                     {errorMessage && <Text color="red.500">{errorMessage}</Text>}
 
                     <Button onPress={handleSignUp} isDisabled={isLoading}>
-                        {isLoading ? <Spinner color="white" /> : 'Registrar'}
+                        {isLoading ? <Spinner color="white" /> : 'Cadastrar'}
                     </Button>
 
                     <Button variant="link" onPress={() => navigation.navigate('Login')}>
