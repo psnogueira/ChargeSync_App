@@ -20,7 +20,7 @@ Este é o frontend do aplicativo **ChargeSync**, desenvolvido para oferecer uma 
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/station-manager-frontend.git
+   git clone https://github.com/psnogueira/ChargeSync_App.git
    ```
 2. Navegue para o diretório:
    ```bash
