@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { Box, Text, Heading, VStack, Spinner, Center, Stack, HStack, Button, Progress } from 'native-base';
-import { Alert } from 'react-native';
 import { getAllStations } from '../api/stationsApi';
 import { getChargesByUserId } from '../api/chargesApi';
 import { Station } from '../interfaces/Station';
@@ -109,7 +108,7 @@ const DashboardScreen = ({ navigation }: Props) => {
   }, []);
 
   useEffect(() => {
-    console.log("chargeChosen foi atualizado:", chargeChosen);
+
   }, [chargeChosen]); // Este useEffect será executado sempre que chargeChosen mudar
 
    // Atualiza os dados toda vez que a tela ganha o foco
@@ -123,7 +122,10 @@ const DashboardScreen = ({ navigation }: Props) => {
   // Renderiza um cartão para cada estação
   const renderStationItem = ({ item }: { item: Station }) => {
     // Define o progresso com base na disponibilidade
-    const progress = item.available ? 100 : 0;
+    var progress = item.available ? 100 : 0;
+    if (chargeChosen && chargeChosen?.stationId === item.id) {
+        progress = 20;
+    }
   
     return (
       <Box alignItems="center" mb={4}>
@@ -146,7 +148,17 @@ const DashboardScreen = ({ navigation }: Props) => {
             </Box>
             {/* Exibe a disponibilidade */}
             <Center
-              bg={item.available ? 'green.500' : 'red.500'}
+              bg={(() => {
+                if (chargeChosen && chargeChosen?.stationId === item.id) {
+                    return 'blue.500';
+                } else {
+                    if (item.available) {
+                        return 'green.500';
+                    } else {
+                        return 'red.500';
+                    }
+                }
+            })()}
               _dark={{ bg: item.available ? 'green.400' : 'red.400' }}
               _text={{ color: 'warmGray.50', fontWeight: '700', fontSize: 'xs' }}
               position="absolute"
@@ -154,7 +166,17 @@ const DashboardScreen = ({ navigation }: Props) => {
               px="3"
               py="1.5"
             >
-              {item.available ? 'DISPONÍVEL' : 'OCUPADO'}
+              {(() => {
+                    if (chargeChosen && chargeChosen?.stationId === item.id) {
+                        return 'Sua Estação';
+                    } else {
+                        if (item.available) {
+                            return 'Livre';
+                        } else {
+                            return 'Em Uso';
+                        }
+                    }
+                })()}
             </Center>
           </Box>
   
@@ -186,7 +208,18 @@ const DashboardScreen = ({ navigation }: Props) => {
               <Progress
                 value={progress} // Progresso baseado na disponibilidade
                 size="sm"
-                colorScheme={item.available ? 'green' : 'red'} // Verde para disponível, vermelho para ocupado
+                colorScheme={(() => {
+                    if (chargeChosen && chargeChosen?.stationId === item.id) {
+                        return 'blue';
+                    } else {
+                        if (item.available) {
+                            return 'green';
+                        } else {
+                            return 'gray';
+                        }
+                    }
+                })()}
+
               />
             </Box>
   
@@ -199,18 +232,22 @@ const DashboardScreen = ({ navigation }: Props) => {
                   : !item.available // Desabilita se a estação não está disponível
               }
               onPress={() => {
-                navigation.navigate('StationDetail', { stationId: item.id.toString() }); // Passa o ID da estação
+                const usedByMe = chargeChosen?.stationId === item.id;
+
+                // Passar stationId e myStation para a tela StationDetail
+                navigation.navigate('StationDetail', {
+                    stationId: item.id.toString(),
+                    usedByMe: usedByMe,
+                });
               }}
               backgroundColor={(() => {
                 if (chargeChosen) {
-                    console.log('chargeChosen:', chargeChosen);
                     if (chargeChosen?.stationId === item.id) {
                         return 'blue.500';
                     } else {
                         return 'gray.400';
                     }
                 } else {
-                    console.log('chargeChosen:', chargeChosen);
                     if (item.available) {
                         return 'blue.500';
                     } else {
@@ -245,14 +282,12 @@ const DashboardScreen = ({ navigation }: Props) => {
             >
                 {(() => {
                     if (chargeChosen) {
-                        console.log('chargeChosen:', chargeChosen);
                         if (chargeChosen?.stationId === item.id) {
                             return 'Ver Detalhes';
                         } else {
                             return 'Bloqueado';
                         }
                     } else {
-                        console.log('chargeChosen:', chargeChosen);
                         if (item.available) {
                             return 'Usar';
                         } else {
@@ -260,12 +295,7 @@ const DashboardScreen = ({ navigation }: Props) => {
                         }
                     }
                 })()}
-
-                
-              
             </Button>
-            
-            
           </Stack>
         </Box>
       </Box>
@@ -277,9 +307,6 @@ const DashboardScreen = ({ navigation }: Props) => {
       {/* Usando HStack para alinhar o Heading e o Button horizontalmente */}
       <HStack justifyContent="space-between" alignItems="center" mb={10}>
         <Heading>Todas as Estações</Heading>
-        {/* // Heading com o valor de chargeChosen */}
-        <Heading size="md">{chargeChosen ? `Estação usada: ${chargeChosen.stationId}` : 'Nenhuma recarga em andamento'}</Heading>
-        
         <Button onPress={() => navigation.navigate('Preferences')}>Preferências de Carregamento</Button>
       </HStack>
 

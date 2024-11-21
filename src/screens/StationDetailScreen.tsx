@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
 import { Charge } from '../interfaces/Charge';
 import { Station } from '../interfaces/Station';
-import { createCharge, getChargesByUserId } from '../api/chargesApi';
+import { createCharge, updateChargeProgress, getChargesByUserId } from '../api/chargesApi';
 import { getStationById } from '../api/stationsApi';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -20,7 +20,8 @@ type Props = {
 };
 
 type RouteParams = {
-  stationId: string; // Tipo do parâmetro que será passado
+  stationId: string; //  ID da estação.
+  usedByMe: boolean; // Se a estação está sendo utilizada pelo usuário.
 };
 
 const StationDetailScreen = ({ navigation }: Props) => {
@@ -32,6 +33,7 @@ const StationDetailScreen = ({ navigation }: Props) => {
 
   const route = useRoute();
   const { stationId } = route.params as RouteParams; // Obtém o parâmetro stationId
+  const { usedByMe } = route.params as RouteParams; // Obtém o parâmetro usedByMe
 
   // Função para buscar as sessões de recarga do usuário
   const fetchUserCharges = async () => {
@@ -80,28 +82,45 @@ const StationDetailScreen = ({ navigation }: Props) => {
 
   // Função para criar uma nova sessão de recarga
   const handleCreateCharge = async () => {
-    try {
-      const userId = await AsyncStorage.getItem('userId');
-      const token = await AsyncStorage.getItem('token');
-      if (!userId || !token) {
-        throw new Error('Usuário não autenticado. Faça login novamente.');
+    const userId = await AsyncStorage.getItem('userId');
+    const token = await AsyncStorage.getItem('token');
+
+    if (!userId || !token) {
+      throw new Error('Usuário não autenticado. Faça login novamente.');
+    }
+
+    if (usedByMe) {
+      try {
+        // Atualiza o progresso da sessão de recarga para 100.
+        await updateChargeProgress(
+          Number(chargeChosen?.id),
+          100,
+          token
+        );
+  
+        // Navega para a tela de Dashboard.
+        navigation.navigate('Dashboard');
+      } catch (error: any) {
+        setError(error.message || 'Erro ao atualização a sessão de recarga.');
       }
-
-      // Cria uma nova sessão de recarga
-      await createCharge(
-        {
-          stationId: Number(stationId),
-          userId: Number(userId),
-          start_time: new Date().toISOString(),
-          status: 'em andamento',
-        },
-        token
-      );
-
-      // Navega para a tela de Dashboard.
-      navigation.navigate('Dashboard');
-    } catch (error: any) {
-      setError(error.message || 'Erro ao criar a sessão de recarga.');
+    } else {
+      try {
+        // Cria uma nova sessão de recarga
+        await createCharge(
+          {
+            stationId: Number(stationId),
+            userId: Number(userId),
+            start_time: new Date().toISOString(),
+            status: 'em andamento',
+          },
+          token
+        );
+  
+        // Navega para a tela de Dashboard.
+        navigation.navigate('Dashboard');
+      } catch (error: any) {
+        setError(error.message || 'Erro ao criar a sessão de recarga.');
+      }
     }
   };
 
@@ -182,12 +201,24 @@ const StationDetailScreen = ({ navigation }: Props) => {
 
           {/* Botão para utilizar a estação */}
           <Button
-            colorScheme="primary"
+            colorScheme={(() => {
+              if (usedByMe) {
+                  return 'green';
+              } else {
+                return 'primary';
+              }
+          })()}
             onPress={handleCreateCharge}
             size="lg"
             leftIcon={<Icon as={MaterialIcons} name="power" size="sm" color="white" />}
           >
-            Utilizar Estação
+            {(() => {
+              if (usedByMe) {
+                  return 'Finalizar Carga';
+              } else {
+                return 'Utilizar Estação';
+              }
+          })()}
           </Button>
         </VStack>
       ) : (

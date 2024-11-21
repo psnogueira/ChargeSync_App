@@ -12,6 +12,7 @@ import HistoryScreen from '../screens/HistoryScreen';
 
 // Definindo o RootStackParamList com todas as telas do projeto
 export type RootStackParamList = {
+  
   Welcome: undefined;
   Login: undefined;
   SignUp: undefined;
@@ -21,7 +22,7 @@ export type RootStackParamList = {
   ConfirmAppointment: undefined;
 
   Dashboard: undefined;
-  StationDetail: { stationId: string };
+  StationDetail: { stationId: string ; usedByMe: boolean};
   Preferences: undefined;
   History: undefined;
 };
