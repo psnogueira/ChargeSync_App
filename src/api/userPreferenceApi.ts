@@ -9,7 +9,7 @@ export const getUserPreferences = async (userId: number, token: string): Promise
   try {
     const response = await axios.get(`${API_URL}/users/${userId}/preferences`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Adiciona o token JWT no cabeçalho
+        Authorization: `Bearer ${token}`,
       },
     });
 

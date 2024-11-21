@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { Box, Text, Heading, VStack, Spinner, Center, Stack, HStack, Button, Progress } from 'native-base';
 import { Alert } from 'react-native';
-import { getAllStations } from '../api/stationsApi'; // Função que busca as estações
-import { Station } from '../interfaces/Station'; // Interface da estação
+import { getAllStations } from '../api/stationsApi';
+import { getChargesByUserId } from '../api/chargesApi';
+import { Station } from '../interfaces/Station';
+import { Charge } from '../interfaces/Charge';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -22,6 +25,8 @@ const DashboardScreen = ({ navigation }: Props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [numColumns, setNumColumns] = useState(1); // Estado para armazenar o número de colunas
+  const [charges, setCharges] = useState<Charge[]>([]);
+  const [chargeChosen, setChargeChosen] = useState<Charge | null>(null);
 
   // Função para buscar as estações usando a API
   const fetchStations = async () => {
@@ -41,6 +46,35 @@ const DashboardScreen = ({ navigation }: Props) => {
       setLoading(false);
     }
   };
+
+  // Busca as sessões de recarga em andamento do usuário.
+  const fetchUserCharges = async () => {
+    const userId = await AsyncStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('ID do usuário não encontrado no armazenamento local.');
+      }
+
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token não encontrado no armazenamento local.');
+      }
+
+    try {
+        const response = await getChargesByUserId(Number(userId), token);
+        const chargeResponse = response.data.data;
+
+        // Variavel com todos os dados das sessões de recarga que tem status = "em andamento"
+        const chargesInProgress = chargeResponse.filter((charge: Charge) => charge.status === 'em andamento');
+
+        // Pega a única sessão de recarga que está em andamento.
+        const chargeInProgress = chargesInProgress[0];
+        setCharges(chargesInProgress);
+        setChargeChosen(chargeInProgress);
+
+      } catch (err: any) {
+        console.error(err);
+      }
+  }
 
   // Função para atualizar o número de colunas com base no tamanho da tela
   const updateNumColumns = () => {
@@ -71,7 +105,20 @@ const DashboardScreen = ({ navigation }: Props) => {
 
   useEffect(() => {
     fetchStations();
+    fetchUserCharges();
   }, []);
+
+  useEffect(() => {
+    console.log("chargeChosen foi atualizado:", chargeChosen);
+  }, [chargeChosen]); // Este useEffect será executado sempre que chargeChosen mudar
+
+   // Atualiza os dados toda vez que a tela ganha o foco
+   useFocusEffect(
+    useCallback(() => {
+      fetchStations();
+      fetchUserCharges();
+    }, [])
+  );
 
   // Renderiza um cartão para cada estação
   const renderStationItem = ({ item }: { item: Station }) => {
@@ -146,15 +193,47 @@ const DashboardScreen = ({ navigation }: Props) => {
             {/* Botão "Usar" */}
             <Button
               mt={2}
-              isDisabled={!item.available} // Desabilita o botão se a estação não está disponível
+              isDisabled={
+                chargeChosen
+                  ? chargeChosen?.stationId !== item.id // Desabilita se houver uma estação em uso e não for a atual
+                  : !item.available // Desabilita se a estação não está disponível
+              }
               onPress={() => {
-                if (item.available) {
-                  navigation.navigate('StationDetail', { stationId: item.id.toString() }); // Passa o ID da estação
-                }
+                navigation.navigate('StationDetail', { stationId: item.id.toString() }); // Passa o ID da estação
               }}
-              backgroundColor={item.available ? 'blue.500' : 'gray.400'} // Azul se habilitado, cinza se desabilitado
+              backgroundColor={(() => {
+                if (chargeChosen) {
+                    console.log('chargeChosen:', chargeChosen);
+                    if (chargeChosen?.stationId === item.id) {
+                        return 'blue.500';
+                    } else {
+                        return 'gray.400';
+                    }
+                } else {
+                    console.log('chargeChosen:', chargeChosen);
+                    if (item.available) {
+                        return 'blue.500';
+                    } else {
+                        return 'gray.400';
+                    }
+                }
+            })()} // Azul se habilitado, cinza se desabilitado
               _text={{
-                color: item.available ? 'white' : 'gray.700', // Texto branco se habilitado
+                color: (() => {
+                    if (chargeChosen) {
+                      if (chargeChosen?.stationId === item.id) {
+                        return 'white'; // Texto branco para estação em uso
+                      } else {
+                        return 'gray.700'; // Texto cinza para outras estações
+                      }
+                    } else {
+                      if (item.available) {
+                        return 'white'; // Texto branco para estações disponíveis
+                      } else {
+                        return 'gray.700'; // Texto cinza para estações indisponíveis
+                      }
+                    }
+                  })(),
               }}
               _pressed={{
                 backgroundColor: 'blue.700', // Cor ao pressionar
@@ -164,8 +243,29 @@ const DashboardScreen = ({ navigation }: Props) => {
                 _text: { color: 'gray.700' }, // Texto desabilitado
               }}
             >
-              Usar
+                {(() => {
+                    if (chargeChosen) {
+                        console.log('chargeChosen:', chargeChosen);
+                        if (chargeChosen?.stationId === item.id) {
+                            return 'Ver Detalhes';
+                        } else {
+                            return 'Bloqueado';
+                        }
+                    } else {
+                        console.log('chargeChosen:', chargeChosen);
+                        if (item.available) {
+                            return 'Usar';
+                        } else {
+                            return 'Bloqueado';
+                        }
+                    }
+                })()}
+
+                
+              
             </Button>
+            
+            
           </Stack>
         </Box>
       </Box>
@@ -177,6 +277,9 @@ const DashboardScreen = ({ navigation }: Props) => {
       {/* Usando HStack para alinhar o Heading e o Button horizontalmente */}
       <HStack justifyContent="space-between" alignItems="center" mb={10}>
         <Heading>Todas as Estações</Heading>
+        {/* // Heading com o valor de chargeChosen */}
+        <Heading size="md">{chargeChosen ? `Estação usada: ${chargeChosen.stationId}` : 'Nenhuma recarga em andamento'}</Heading>
+        
         <Button onPress={() => navigation.navigate('Preferences')}>Preferências de Carregamento</Button>
       </HStack>
 

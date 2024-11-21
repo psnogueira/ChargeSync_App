@@ -22,14 +22,14 @@ export const getAllStations = async (token: string): Promise<AxiosResponse> => {
 };
 
 // Função para buscar uma estação pelo ID
-export const getStationById = async (id: number, token: string): Promise<Station> => {
+export const getStationById = async (id: number, token: string): Promise<AxiosResponse> => {
   try {
     const response = await axios.get(`${API_BASE_URL}/stations/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data; // Retorna uma única estação
+    return response; // Retorna uma única estação
   } catch (error) {
     console.error(`Erro ao buscar estação com ID ${id}:`, error);
     throw error;
