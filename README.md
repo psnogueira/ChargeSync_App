@@ -38,6 +38,10 @@ Este é o frontend do aplicativo **ChargeSync**, desenvolvido para oferecer uma 
    ```bash
    npm start
    ```
+6. Aperte 'w' para executar a versão web:
+   ```bash
+   w
+   ```
 
 ## Usuários para Teste
 
