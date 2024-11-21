@@ -63,8 +63,8 @@ const SignUpScreen = ({ navigation }: Props) => {
                 
                 // Criar as preferências do usuário
                 const userId = await getUserIdByUsername(username);
-                const preferredEnergyType = 'renovável';
-                const preferredHours = 'manhã';
+                const preferredEnergyType = 'qualquer';
+                const preferredHours = 'qualquer';
                 const preferences = {
                     userId: userId,
                     preferred_energy_type: preferredEnergyType,
