@@ -2,6 +2,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, Button, Center, Input, Text, Heading, VStack, FormControl, Spinner } from 'native-base';
 import React, { useState } from 'react';
 import { RootStackParamList } from '../navigation/AppNavigator'; 
+import { getUserIdByUsername } from '../api/auth';
+import {
+    getUserPreferences,
+    createUserPreferences,
+    updateUserPreferenceById
+  } from '../api/userPreferenceApi';
 
 type SignUpScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -54,6 +60,25 @@ const SignUpScreen = ({ navigation }: Props) => {
             } else {
                 setIsLoading(false);
                 setErrorMessage('Usuário registrado com sucesso!');
+                
+                // Criar as preferências do usuário
+                const userId = await getUserIdByUsername(username);
+                const preferredEnergyType = 'renovável';
+                const preferredHours = 'manhã';
+                const preferences = {
+                    userId: userId,
+                    preferred_energy_type: preferredEnergyType,
+                    preferred_hours: preferredHours
+                }
+                console.log('UserId: ', userId);
+
+                try {
+                    const newPreference = await createUserPreferences(userId, preferences);
+                    console.log('Preferência criada com sucesso:', newPreference);
+                } catch (error) {
+                    console.error('Erro ao criar a preferência:', error);
+                }
+
                 navigation.navigate('Login');
             }
         } catch (error) {

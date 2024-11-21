@@ -24,18 +24,12 @@ export const getUserPreferences = async (userId: number, token: string): Promise
 // Função para criar uma nova preferência de usuário
 export const createUserPreferences = async (
   userId: number,
-  preferences: Omit<UserPreference, 'id' | 'userId'>,
-  token: string
+  preferences: Omit<UserPreference, 'id' | 'userId'>
 ): Promise<UserPreference> => {
   try {
     const response = await axios.post(
       `${API_URL}/users/${userId}/preferences`,
-      preferences,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Adiciona o token JWT no cabeçalho
-        },
-      }
+      preferences
     );
     return response.data; // Retorna a preferência criada
   } catch (error: any) {
