@@ -1,8 +1,49 @@
-# Checkpoint 2 - 2º Semestre - Mobile Dev
+# GS 2º Semestre 2024 - Mobile Dev
 
-### Integrantes:
+Este é o frontend do aplicativo **ChargeSync**, desenvolvido para oferecer uma interface simples e intuitiva para monitorar e gerenciar o processo de recarga de veículos elétricos. A aplicação permite que os usuários acompanhem o status das estações em tempo real, verifiquem a disponibilidade e personalizem suas preferências de carregamento.
 
-- LAURA ZOIA – RM93294
-- PEDRO NOGUEIRA – RM94402
-- HEITOR MANCINI – RM94288
-- GABRIEL MOURA – RM93940
+## Funcionalidades
+
+- Listagem de estações de recarga.
+- Verificação da disponibilidade das estações.
+- Visualização de detalhes das estações.
+- Identificação de estações em uso pelo usuário.
+- Navegação fluida entre telas.
+
+## Tecnologias Utilizadas
+
+- **React Native**
+- **TypeScript**
+- **Axios** (para comunicação com a API)
+
+## Como Rodar o Projeto
+
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/station-manager-frontend.git
+   ```
+2. Navegue para o diretório:
+   ```bash
+   cd ChargeSync_Backend
+   ```
+3. Instale as dependências:
+   ```bash
+   npm install
+   ```
+4. Inicie o backend (no projeto [ChargeSync_Backend](https://github.com/psnogueira/ChargeSync_Backend)):
+   ```env
+   node .\server.js
+   ```
+5. Inicie o projeto:
+   ```bash
+   npm start
+   ```
+
+## Usuários para Teste
+
+Já existem **4 usuários cadastrados** para testes:
+
+- **Usuários**: `user`, `joao`, `pedro`, `laura`
+- **Senha para todos**: `12345`
+
+Mas você também pode cadastrar o seu  (;
