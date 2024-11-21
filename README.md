@@ -24,7 +24,7 @@ Este é o frontend do aplicativo **ChargeSync**, desenvolvido para oferecer uma 
    ```
 2. Navegue para o diretório:
    ```bash
-   cd ChargeSync_Backend
+   cd ChargeSync_App
    ```
 3. Instale as dependências:
    ```bash
