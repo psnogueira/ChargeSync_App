@@ -16,7 +16,7 @@ Este é o frontend do aplicativo **ChargeSync**, desenvolvido para oferecer uma 
 - **TypeScript**
 - **Axios** (para comunicação com a API)
 
-## Como Rodar o Projeto
+## Como rodar o Projeto
 
 1. Clone o repositório:
    ```bash
