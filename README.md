@@ -8,7 +8,6 @@ Este é o frontend do aplicativo **ChargeSync**, desenvolvido para oferecer uma 
 - Verificação da disponibilidade das estações.
 - Visualização de detalhes das estações.
 - Identificação de estações em uso pelo usuário.
-- Navegação fluida entre telas.
 
 ## Tecnologias Utilizadas
 
